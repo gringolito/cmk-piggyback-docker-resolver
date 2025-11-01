@@ -1,0 +1,8 @@
+<<<docker_container_labels:cached(1762027005,90):sep(124)>>>
+@docker_version_info|{"PluginVersion": "0.1", "DockerPyVersion": "7.1.0", "ApiVersion": "1.51"}
+<<<docker_container_labels:cached(1762027005,90):sep(0)>>>
+{"checkmk.hostname":"custom-hostname","traefik.enable":"true"}
+<<<docker_container_network:cached(1762027005,90):sep(124)>>>
+@docker_version_info|{"PluginVersion": "0.1"}
+<<<docker_container_network:cached(1762027005,90):sep(0)>>>
+{"Networks":{"proxy-network":{"Aliases":["radarr","radarr"]}}}

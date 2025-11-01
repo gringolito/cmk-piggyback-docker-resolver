@@ -1,0 +1,18 @@
+[Unit]
+Description=Checkmk piggyback Docker resolver daemon (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+Group=%i
+ExecStart=/usr/bin/cmk-piggyback-docker-resolver %i
+Restart=on-failure
+RestartSec=5
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

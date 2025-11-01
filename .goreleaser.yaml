@@ -1,0 +1,75 @@
+---
+project_name: cmk-piggyback-docker-resolver
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: main
+    main: ./cmd/cmk-piggyback-docker-resolver
+    env:
+      - CGO_ENABLED=0
+    goos: [linux]
+    goarch: [amd64, arm64, arm]
+    goamd64: [v3]
+    goarm: ["7"]
+    flags: [-trimpath]
+    ldflags:
+      - -s -w
+
+archives:
+  - id: tgz
+    formats: [ tar.gz ]
+    # this name template makes the OS and Arch compatible with the results of uname.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    files:
+      - config.example.yaml
+      - cmk-piggyback-docker-resolver@.service
+      - README.md
+
+nfpms:
+  - id: linux-packages
+    package_name: cmk-piggyback-docker-resolver
+    maintainer: Filipe Utzig <filipe@gringolito.com>
+    homepage: https://github.com/gringolito/cmk-piggyback-docker-resolver
+    description: Checkmk piggyback Docker resolver daemon
+    license: Beer-ware
+    formats: [deb, rpm]
+    contents:
+      - src: config.example.yaml
+        dst: /etc/cmk-piggyback-docker-resolver/example.yaml
+        type: config
+        file_info:
+          mode: 0640
+      - src: cmk-piggyback-docker-resolver@.service
+        dst: /lib/systemd/system/cmk-piggyback-docker-resolver@.service
+        file_info:
+          mode: 0644
+    scripts:
+      postinstall: scripts/postinstall.sh
+      postremove: scripts/postremove.sh
+    deb:
+      lintian_overrides:
+        - statically-linked-binary
+        - changelog-file-missing-in-native-package
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-{{ if .IsGitDirty	}}dirty{{ else }}SNAPSHOT{{ end }}-g{{ .ShortCommit }}"
+
+release:
+  github:
+    owner: gringolito
+    name: cmk-piggyback-docker-resolver
+
+changelog:
+  use: github
